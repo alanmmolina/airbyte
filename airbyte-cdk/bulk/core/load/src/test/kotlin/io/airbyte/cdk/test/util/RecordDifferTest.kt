@@ -2,13 +2,13 @@
  * Copyright (c) 2024 Airbyte, Inc., all rights reserved.
  */
 
-package io.airbyte.cdk.test
+package io.airbyte.cdk.test.util
 
 import java.time.Instant
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class MaybeRecordDifferTest {
+class RecordDifferTest {
     @Test
     fun testBasicBehavior() {
         val differ =
