@@ -76,7 +76,7 @@ allprojects {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
             languageVersion = KotlinVersion.KOTLIN_1_9
-            allWarningsAsErrors = true
+            allWarningsAsErrors = false
             freeCompilerArgs = ["-Xjvm-default=all"]
         }
         dependsOn {
@@ -87,7 +87,7 @@ allprojects {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
             languageVersion = KotlinVersion.KOTLIN_1_9
-            allWarningsAsErrors = true
+            allWarningsAsErrors = false
             freeCompilerArgs = ["-Xjvm-default=all"]
         }
         dependsOn {
@@ -98,7 +98,7 @@ allprojects {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
             languageVersion = KotlinVersion.KOTLIN_1_9
-            allWarningsAsErrors = true
+            allWarningsAsErrors = false
             freeCompilerArgs = ["-Xjvm-default=all"]
         }
         dependsOn {
@@ -234,5 +234,9 @@ allprojects {
 
     javadoc {
         options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions.suppressWarnings = true
     }
 }

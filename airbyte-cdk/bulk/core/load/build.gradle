@@ -10,9 +10,3 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
     implementation "org.jetbrains.kotlin:kotlin-reflect:2.0.0"
 }
-
-java {
-    compileJava {
-        options.compilerArgs.remove("-Werror")
-    }
-}
