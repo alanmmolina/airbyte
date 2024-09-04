@@ -68,33 +68,15 @@ class GlobalSubstreamCursor(DeclarativeCursor):
         * Setting `self._all_slices_yielded = True`. We do that before actually yielding the last slice as the caller of `stream_slices` might stop iterating at any point and hence the code after `yield` might not be executed
         * Yield the last slice. At that point, once there are as many slices yielded as closes, the global slice will be closed too
         """
-        previous_slice = None
-
         slice_generator = (
             StreamSlice(partition=partition, cursor_slice=cursor_slice)
             for partition in self._partition_router.stream_slices()
             for cursor_slice in self._stream_cursor.stream_slices()
         )
 
-        for slice in slice_generator:
-            if previous_slice is not None:
-                # Release the semaphore to indicate that a slice has been yielded
-                self._slice_semaphore.release()
-                yield previous_slice
+        yield from self.generate_slices_from_generator(slice_generator)
 
-            # Store the current slice as the previous slice for the next iteration
-            previous_slice = slice
-
-        # After all slices have been generated, release the semaphore one final time
-        # and flag that all slices have been yielded
-        self._slice_semaphore.release()
-        self._all_slices_yielded = True
-
-        # Yield the last slice
-        if previous_slice is not None:
-            yield previous_slice
-
-    def generate_slices_from_perparation_cursor(self, slice_generator: Generator) -> None:
+    def generate_slices_from_generator(self, slice_generator: Generator) -> Iterable[StreamSlice]:
         previous_slice = None
 
         for slice in slice_generator:

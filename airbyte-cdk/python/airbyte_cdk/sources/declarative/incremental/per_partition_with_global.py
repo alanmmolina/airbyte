@@ -53,7 +53,7 @@ class PerPartitionWithGlobalCursor(DeclarativeCursor):
             yield from self._global_cursor.stream_slices()
         else:
             slice_generator = (slice for slice in self._per_partition_cursor.stream_slices())
-            yield from self._global_cursor.generate_slices_from_perparation_cursor(slice_generator)
+            yield from self._global_cursor.generate_slices_from_generator(slice_generator)
 
     def set_initial_state(self, stream_state: StreamState) -> None:
         """
