@@ -4,7 +4,7 @@
 
 import threading
 import time
-from typing import Any, Iterable, Mapping, Optional, Union
+from typing import Any, Iterable, Mapping, Optional, Union, Generator
 
 from airbyte_cdk.sources.declarative.incremental.datetime_based_cursor import DatetimeBasedCursor
 from airbyte_cdk.sources.declarative.incremental.declarative_cursor import DeclarativeCursor
@@ -93,6 +93,28 @@ class GlobalSubstreamCursor(DeclarativeCursor):
         # Yield the last slice
         if previous_slice is not None:
             yield previous_slice
+
+    def generate_slices_from_perparation_cursor(self, slice_generator: Generator) -> None:
+        previous_slice = None
+
+        for slice in slice_generator:
+            if previous_slice is not None:
+                # Release the semaphore to indicate that a slice has been yielded
+                self._slice_semaphore.release()
+                yield previous_slice
+
+            # Store the current slice as the previous slice for the next iteration
+            previous_slice = slice
+
+        # After all slices have been generated, release the semaphore one final time
+        # and flag that all slices have been yielded
+        self._slice_semaphore.release()
+        self._all_slices_yielded = True
+
+        # Yield the last slice
+        if previous_slice is not None:
+            yield previous_slice
+
 
     def set_initial_state(self, stream_state: StreamState) -> None:
         """
